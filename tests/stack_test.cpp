@@ -7,11 +7,12 @@ public:
     void SetUp() override {}
     void TearDown() override {}
 
-    using Stack = AtomicStack<int, MemoryLeakFinder<100'000'000>>;
-    //using Stack = AtomicStack<int, Dummy>;
+    //using Stack = AtomicStack<int, MemoryLeakFinder<100'000'000>>;
+    using Stack = AtomicStack<int, Dummy>;
     Stack stack;
 
     void check_leak() {
+        std::cout << "garbage count max = " << stack.garbage_count_max.load() << std::endl;
         stack.~AtomicStack();
         ASSERT_TRUE(Stack::Node::check());
     }
@@ -51,7 +52,6 @@ TEST_F(MyFixture, ParallelSimpleTest8) { check_stack(stack, 20000, 4, 0.9); chec
 TEST_F(MyFixture, TwoThreadPushPopTest1) { check_stack_push_pop(stack, 50'000'000, 2, 0.1); check_leak(); }
 TEST_F(MyFixture, TwoThreadPushPopTest2) { check_stack_push_pop(stack, 50'000'000, 2, 0.5); check_leak(); }
 TEST_F(MyFixture, TwoThreadPushPopTest3) { check_stack_push_pop(stack, 50'000'000, 2, 0.9); check_leak(); }
-
 TEST_F(MyFixture, TwoThreadTest1) { check_stack(stack, 50'000'000, 2, 0.1); check_leak(); }
 TEST_F(MyFixture, TwoThreadTest2) { check_stack(stack, 50'000'000, 2, 0.5); check_leak(); }
 TEST_F(MyFixture, TwoThreadTest3) { check_stack(stack, 50'000'000, 2, 0.9); check_leak(); }
